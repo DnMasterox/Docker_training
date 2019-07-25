@@ -1,0 +1,25 @@
+FROM my-base:1.0.1 as data
+ENV GRADLE_VERSION 4.0
+ENV MAIN_DIR /allure-docker-example
+# Install Gradle
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
+    unzip gradle-${GRADLE_VERSION}-bin.zip && \
+   mv gradle-${GRADLE_VERSION} /opt/ && \
+    rm gradle-${GRADLE_VERSION}-bin.zip
+ENV GRADLE_HOME /opt/gradle-${GRADLE_VERSION}
+ENV PATH $PATH:$GRADLE_HOME/bin
+# Prepare jars
+WORKDIR ${MAIN_DIR}
+COPY . .
+RUN ./gradlew
+
+ENV MAIN_JAR 'allure-docker-example-1.1.0.jar'
+# Install Allure CLI
+RUN wget https://github.com/allure-framework/allure-core/releases/download/allure-core-1.4.23/allure-commandline.zip && \
+   unzip allure-commandline.zip
+#COPY --from=data ${MAIN_DIR} ${MAIN_DIR}
+WORKDIR ${MAIN_DIR}/build/libs
+#Run tests, generate and open report
+CMD (java -jar ${MAIN_JAR} || echo "Failed tests") && \
+    allure generate -o allure-report allure-result && \
+    allure report open -p 80

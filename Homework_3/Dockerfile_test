@@ -1,0 +1,7 @@
+FROM python:3.6-slim
+LABEL author="Mykola Shumakov"
+COPY test-requirements.txt .
+COPY tests/conftest.py tests/test_app.py ./
+EXPOSE 5000 
+RUN pip install -r test-requirements.txt
+ENTRYPOINT pytest test_app.py --url http://localhost:5000

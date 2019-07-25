@@ -1,0 +1,4 @@
+FROM java:8-jdk
+MAINTAINER Mykola Shumakov <mshuma@softserveinc.com>
+LABEL Description “This image is used as a base environment with pre-installed dependencies”
+

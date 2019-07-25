@@ -1,0 +1,22 @@
+FROM java:8-jdk
+MAINTAINER Mykhailo Kolpakov <mishanyakolpakov@gmail.com>
+LABEL Description=“This image is used as a base environment with pre-installed dependencies”
+# Install dependencies
+RUN apt-get install -fy unzip git git is not required to run the code.
+ENV MAIN_DIR /allure-docker-example
+MKOLPAKO-M-W0DW:~ mkolp$ docker build -t base-env:1.0.0 .
+
+Package-image:
+FROM base-env:1.0.0
+ENV GRADLE_VERSION 4.0
+# Install Gradle
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \ it is possible to use a gradle images instead of installation.
+   unzip gradle-${GRADLE_VERSION}-bin.zip && \
+   mv gradle-${GRADLE_VERSION} /opt/ && \
+   rm gradle-${GRADLE_VERSION}-bin.zip
+ENV GRADLE_HOME /opt/gradle-${GRADLE_VERSION}
+ENV PATH $PATH:$GRADLE_HOME/bin
+# Prepare jars
+WORKDIR ${MAIN_DIR}
+COPY . .
+RUN ./gradlew

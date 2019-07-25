@@ -1,0 +1,12 @@
+FROM my-package:1.0.0 as data
+FROM my-base:1.0.0
+ENV MAIN_JAR 'allure-docker-example-1.1.0.jar'
+# Install Allure CLI
+RUN wget https://github.com/allure-framework/allure-core/releases/download/allure-core-1.4.23/allure-commandline.zip && \
+   unzip allure-commandline.zip
+COPY --from=data ${MAIN_DIR} ${MAIN_DIR}
+WORKDIR ${MAIN_DIR}/build/libs
+#Run tests, generate and open report
+CMD (java -jar ${MAIN_JAR} || echo “Failed tests”) && \
+   allure generate -o allure-report allure-result && \
+   allure report open -p 80

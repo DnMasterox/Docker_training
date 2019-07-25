@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+ hits:
+   build: .
+   image: mshumakov/hits:h4
+   depends_on:
+     - redis
+   networks:
+     - public
+     - secret
+ redis:
+   image: redis:alpine
+   volumes:
+     - redis-data:/data
+   networks:
+     - secret
+ loadbalancer:
+   image: dockercloud/haproxy:latest
+   links:
+     - hits
+   volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+   ports:
+     - 8080:80
+   networks:
+     - public
+volumes:
+   redis-data:
+     driver: local
+networks:
+   secret:
+     driver: bridge
+   public:
+     driver: bridge

@@ -1,0 +1,13 @@
+FROM my-base:1.0.0
+ENV GRADLE_VERSION 4.0
+# Install Gradle
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
+    unzip gradle-${GRADLE_VERSION}-bin.zip && \
+    mv gradle-${GRADLE_VERSION} /opt/ && \
+    rm gradle-${GRADLE_VERSION}-bin.zip
+ENV GRADLE_HOME /opt/gradle-${GRADLE_VERSION}
+ENV PATH $PATH:$GRADLE_HOME/bin
+# Prepare jars
+WORKDIR ${MAIN_DIR}
+COPY . .
+RUN ./gradlew
